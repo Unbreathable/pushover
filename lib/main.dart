@@ -3,7 +3,7 @@ import 'package:pushover/pages/lobby_page.dart';
 import 'package:pushover/server/server.dart';
 import 'package:pushover/util/theme.dart';
 
-const controlPath = "/Users/julian/Documents/workspace/pushover/control_client";
+const controlPath = String.fromEnvironment("FRONTEND_PATH");
 
 void main() {
   GameServer.startServer();

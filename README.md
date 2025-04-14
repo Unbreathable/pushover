@@ -1,16 +1,9 @@
-# pushover
+# Push Over
 
-A new Flutter project.
+Push Over is a small game developed for one of my birthday parties. I like to make games for them just to have something more to play around with. This game allows users to connect to the game using their phones from the local network. You can then control the characters on screen.
 
-## Getting Started
+A binary for Windows will be available once the project is finished.
 
-This project is a starting point for a Flutter application.
+### Status: Experimental
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The project is currently just getting started and I'm still prototyping the game concept.

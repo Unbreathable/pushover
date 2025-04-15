@@ -1,12 +1,17 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, type Component } from "svelte";
   import { LobbyState } from "./lib/lobby/lobby";
   import { IngameState } from "./lib/ingame/ingame";
   import type { GameState } from "./main";
+  import Lobby from "./lib/lobby/Lobby.svelte";
+  import Ingame from "./lib/ingame/Ingame.svelte";
+  import { Event } from "./lib/events";
 
   // Current state of the page
+  let showStatus = $state(true);
+  let finished = $state(false);
   let currentStatus = $state("Loading all resources..");
-  let currentState = $state("lobby");
+  let currentState = $state("");
 
   // All game states
   let states: Record<string, GameState> = {
@@ -32,15 +37,53 @@
 
     // Send a test packet when the connection is opened
     socket.addEventListener("open", (e) => {
-      // Send a test event
-      const packet = JSON.stringify(["test", { hello: "world" }]);
-      socket.send(packet);
-      currentStatus = "Waiting for lobby...";
+      currentStatus = "Waiting for the server...";
+      showStatus = true;
+    });
+
+    // Show a rejoin message when the connection closes
+    socket.addEventListener("close", () => {
+      showStatus = true;
+      finished = true;
+      currentStatus =
+        "Connection failed. Please try again when the game is in the Lobby state.";
+    });
+
+    // Show an error
+    socket.addEventListener("error", (e) => {
+      showStatus = true;
+      finished = true;
+      currentStatus =
+        "Connection failed. Please try again when the game is in the Lobby state.";
     });
 
     // Listen for future events
     socket.addEventListener("message", (msg) => {
-      console.log(msg);
+      if (msg.data) {
+        console.log(msg.data);
+        try {
+          const event = Event.fromJson(msg.data);
+          console.log("Parsed event:", event.name);
+
+          // Handle state change in case it is one
+          switch (event.name) {
+            case "state_change":
+              currentState = event.data;
+              showStatus = false;
+              return;
+
+            case "init":
+              return;
+          }
+
+          // Let the event be handled by a state in case there is one
+          if (states[currentState]) {
+            states[currentState].handleEvent(event);
+          }
+        } catch (error) {
+          console.error("Failed to parse event:", error);
+        }
+      }
     });
   });
 </script>
@@ -50,43 +93,23 @@
     <div
       class="flex justify-center items-center w-full h-full bg-background text-white text-xl leading-normal"
     >
-      <p id="status-message" class="animate-pulse">
-        {currentStatus}
-      </p>
-      <div class="flex flex-col items-center justify-center gap-2">
-        <div>
-          <button
-            class="flex items-center justify-center bg-container border-2 border-border rounded-xl text-white p-3 cursor-pointer"
-          >
-            <span class="material-symbols" style="font-size: 40px;"
-              >arrow_upward</span
-            >
-          </button>
-        </div>
-        <div class="flex items-center justify-center gap-2">
-          <button
-            class="flex items-center justify-center bg-container border-2 border-border rounded-xl text-white p-3 cursor-pointer"
-          >
-            <span class="material-symbols" style="font-size: 40px;"
-              >arrow_back</span
-            >
-          </button>
-          <button
-            class="flex items-center justify-center bg-container border-2 border-border rounded-xl text-white p-3 cursor-pointer"
-          >
-            <span class="material-symbols" style="font-size: 40px;"
-              >arrow_downward</span
-            >
-          </button>
-          <button
-            class="flex items-center justify-center bg-container border-2 border-border rounded-xl text-white p-3 cursor-pointer"
-          >
-            <span class="material-symbols" style="font-size: 40px;"
-              >arrow_forward</span
-            >
-          </button>
-        </div>
-      </div>
+      <!-- Mount a status message notifying the user about the current status -->
+      {#if !finished && showStatus}
+        <p id="status-message" class="animate-pulse">
+          {currentStatus}
+        </p>
+      {:else if showStatus}
+        <p id="status-message" class="text-text">
+          {currentStatus}
+        </p>
+      {/if}
+
+      <!-- Mount the current component for the game state -->
+      {#if currentState == "lobby"}
+        <Lobby />
+      {:else if currentState == "ingame"}
+        <Ingame />
+      {/if}
     </div>
   </div>
 </main>

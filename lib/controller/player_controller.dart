@@ -27,7 +27,12 @@ class PlayerController {
       }
     }
 
-    return Player("Player ${getRandomString(6)}", toAdd, channel);
+    // Send them information about the current state
+    final player = Player("Player ${getRandomString(6)}", toAdd, channel);
+    player.sendEvent(Event("init", {"name": player.name, "team": toAdd.index}));
+    player.sendEvent(StateController.currentStateEvent());
+
+    return player;
   }
 
   static void handlePlayerDisconnect(Player player) {
@@ -38,7 +43,7 @@ class PlayerController {
   static void sendEventToAll(Event event) {
     for (var entry in _teams.entries) {
       for (var player in entry.value.players) {
-        player.connection.sink.add(jsonEncode(event.toJson()));
+        player.sendEvent(event);
       }
     }
   }
@@ -64,6 +69,10 @@ class Player {
   final TeamType team;
 
   Player(this.name, this.team, this.connection);
+
+  void sendEvent(Event event) {
+    connection.sink.add(event.toJson());
+  }
 
   dynamic toJson() => {"name": name};
 }

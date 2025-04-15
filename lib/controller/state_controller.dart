@@ -16,6 +16,11 @@ class StateController {
     // Tell everyone that the game state changed
     PlayerController.sendEventToAll(Event("state_change", state.eventName));
   }
+
+  /// Get the event used to notify the clienot of the current state
+  static Event currentStateEvent() {
+    return Event("state_change", currentState.peek().eventName);
+  }
 }
 
 abstract class GameState {

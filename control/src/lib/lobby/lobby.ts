@@ -1,4 +1,5 @@
 import type { GameState } from "../../main";
+import type { Event } from "../events";
 
 export class LobbyState implements GameState {
   start(): void {
@@ -9,5 +10,5 @@ export class LobbyState implements GameState {
     console.log("Lobby ended");
   }
 
-  handleEvent(event: string): void {}
+  handleEvent(event: Event): void {}
 }

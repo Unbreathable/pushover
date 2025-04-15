@@ -1,1 +1,1 @@
-flutter run --dart-define FRONTEND_PATH="$($(Get-Location).Path)/control_client"
+flutter run --dart-define FRONTEND_PATH="put_your_path_here"

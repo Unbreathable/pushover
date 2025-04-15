@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pushover/util/vertical_spacing.dart';
+import 'package:signals/signals_flutter.dart';
 
-class LobbyPage extends StatefulWidget {
-  const LobbyPage({super.key});
+class LobbyPage extends StatelessWidget {
+  final Signal<String> status;
 
-  @override
-  State<LobbyPage> createState() => _LobbyPageState();
-}
+  const LobbyPage({super.key, required this.status});
 
-class _LobbyPageState extends State<LobbyPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -18,7 +16,10 @@ class _LobbyPageState extends State<LobbyPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Push Over by Liphium", style: theme.textTheme.headlineMedium),
+            Watch(
+              (ctx) =>
+                  Text(status.value, style: theme.textTheme.headlineMedium),
+            ),
             verticalSpacing(sectionSpacing * 2),
 
             Row(

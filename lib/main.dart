@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pushover/pages/lobby_page.dart';
+import 'package:pushover/pages/game_page.dart';
 import 'package:pushover/server/server.dart';
 import 'package:pushover/util/theme.dart';
 
-const controlPath = String.fromEnvironment("FRONTEND_PATH");
+const controlPath = String.fromEnvironment("FRONTEND_PATH", defaultValue: "-");
 
 void main() {
   GameServer.startServer();
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pushover',
       theme: darkMetalTheme,
-      home: LobbyPage(),
+      home: GamePage(),
     );
   }
 }
